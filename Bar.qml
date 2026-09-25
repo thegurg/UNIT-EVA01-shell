@@ -12,6 +12,7 @@ PanelWindow {
     property var niri
     property var sys
     property var cc
+    property var mon
 
     screen: modelData
 
@@ -84,9 +85,15 @@ PanelWindow {
                 Layout.alignment: Qt.AlignVCenter
             }
 
+            Player {
+                theme: bar.theme
+                Layout.alignment: Qt.AlignVCenter
+            }
+
             SysStats {
                 theme: bar.theme
                 sys: bar.sys
+                mon: bar.mon
                 Layout.alignment: Qt.AlignVCenter
             }
 

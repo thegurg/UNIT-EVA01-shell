@@ -25,6 +25,10 @@ ShellRoot {
         id: ccData
     }
 
+    SysMonState {
+        id: monData
+    }
+
     NotifState {
         id: notifData
     }
@@ -41,6 +45,14 @@ ShellRoot {
         }
     }
 
+    IpcHandler {
+        target: "sysmon"
+
+        function close(): void {
+            monData.close();
+        }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -50,6 +62,7 @@ ShellRoot {
             niri: niriData
             sys: sysData
             cc: ccData
+            mon: monData
         }
     }
 
@@ -82,6 +95,18 @@ ShellRoot {
             screen: modelData
             theme: themeData
             osdData: osdState
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        SysMon {
+            screen: modelData
+            theme: themeData
+            sys: sysData
+            state: monData
+            cc: ccData
         }
     }
 }

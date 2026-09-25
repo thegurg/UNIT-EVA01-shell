@@ -13,6 +13,9 @@ QtObject {
     property string bat: "--"
     property int vol: 0
     property int bri: 0
+    property string uptime: "--"
+    property string load: "0,0,0"
+    property int disk: 0
 
     function refresh() {
         if (scriptPath === "" || proc.running)
@@ -41,6 +44,12 @@ QtObject {
                         root.vol = parseInt(kv[1], 10) || 0;
                     else if (kv[0] === "BRI")
                         root.bri = parseInt(kv[1], 10) || 0;
+                    else if (kv[0] === "UPTIME")
+                        root.uptime = kv[1];
+                    else if (kv[0] === "LOAD")
+                        root.load = kv[1];
+                    else if (kv[0] === "DISK")
+                        root.disk = parseInt(kv[1], 10) || 0;
                 }
             }
         }

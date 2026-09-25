@@ -11,4 +11,11 @@ VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{printf "%d", $2*
 [ -z "$VOL" ] && VOL=0
 BRI=$(brightnessctl -m 2>/dev/null | cut -d, -f4 | tr -d %)
 [ -z "$BRI" ] && BRI=0
-echo "CPU=$CPU MEM=$MEM TEMP=$TEMP BAT=$BAT VOL=$VOL BRI=$BRI"
+US=$(cut -d. -f1 /proc/uptime 2>/dev/null)
+[ -z "$US" ] && US=0
+UPTIME=$(awk -v s="$US" 'BEGIN{d=int(s/86400);h=int(s%86400/3600);m=int(s%3600/60); if(d>0)printf "%dd-%dh",d,h; else if(h>0)printf "%dh-%dm",h,m; else printf "%dm",m}')
+LOAD=$(awk '{print $1","$2","$3}' /proc/loadavg 2>/dev/null)
+[ -z "$LOAD" ] && LOAD="0,0,0"
+DISK=$(df / --output=pcent 2>/dev/null | tail -n1 | tr -d ' %')
+[ -z "$DISK" ] && DISK=0
+echo "CPU=$CPU MEM=$MEM TEMP=$TEMP BAT=$BAT VOL=$VOL BRI=$BRI UPTIME=$UPTIME LOAD=$LOAD DISK=$DISK"

@@ -1,15 +1,16 @@
 import QtQuick
 
-// Stats capsule.
+// Compact text stats capsule. Click toggles the SysMon dropdown.
 Rectangle {
     id: root
 
     property var theme
     property var sys
+    property var mon
 
     property string batText: root.sys.bat === "AC" ? "AC" : root.sys.bat + "%"
 
-    color: theme.c.panel
+    color: mon.open ? theme.c.accent : theme.c.panel
     border.color: theme.c.border
     border.width: 1
     radius: 2
@@ -22,8 +23,14 @@ Rectangle {
         anchors.centerIn: parent
         text: "CPU " + root.sys.cpu + "% ▮ MEM " + root.sys.mem + "% ▮ " + root.sys.temp + "°C ▮ BAT " + root.batText + " ▮ VOL " + root.sys.vol + "%"
         verticalAlignment: Text.AlignVCenter
-        color: root.theme.c.fg
+        color: mon.open ? theme.c.bg : root.theme.c.fg
         font.family: root.theme.font
         font.pixelSize: root.theme.fs
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        cursorShape: Qt.PointingHandCursor
+        onClicked: mon.toggle()
     }
 }
