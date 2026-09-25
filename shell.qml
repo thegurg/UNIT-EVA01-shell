@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 // Default config entry: `quickshell` / `qs` runs this file.
@@ -24,6 +25,22 @@ ShellRoot {
         id: ccData
     }
 
+    NotifState {
+        id: notifData
+    }
+
+    OSDData {
+        id: osdState
+    }
+
+    IpcHandler {
+        target: "osd"
+
+        function poke(kind: string): void {
+            osdState.poke(kind);
+        }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -44,6 +61,27 @@ ShellRoot {
             theme: themeData
             sys: sysData
             state: ccData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        Notifications {
+            screen: modelData
+            theme: themeData
+            notif: notifData
+            cc: ccData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        OSD {
+            screen: modelData
+            theme: themeData
+            osdData: osdState
         }
     }
 }

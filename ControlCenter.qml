@@ -25,6 +25,7 @@ PanelWindow {
     }
     implicitWidth: 300
     implicitHeight: col.implicitHeight + 20
+    color: "transparent"
 
     visible: state.open
 
