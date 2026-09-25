@@ -33,6 +33,27 @@ ShellRoot {
         id: notifData
     }
 
+    NotifCenterState {
+        id: ncData
+    }
+
+    PlayerState {
+        id: pstateData
+    }
+
+    WifiState {
+        id: wifiData
+    }
+
+    BtState {
+        id: btData
+    }
+
+    Cava {
+        id: cavaData
+        active: pstateData.open
+    }
+
     OSDData {
         id: osdState
     }
@@ -53,6 +74,19 @@ ShellRoot {
         }
     }
 
+    IpcHandler {
+        target: "ui"
+
+        function closeAll(): void {
+            ccData.close();
+            monData.close();
+            ncData.close();
+            pstateData.close();
+            wifiData.close();
+            btData.close();
+        }
+    }
+
     Variants {
         model: Quickshell.screens
 
@@ -63,6 +97,11 @@ ShellRoot {
             sys: sysData
             cc: ccData
             mon: monData
+            notif: notifData
+            nc: ncData
+            pstate: pstateData
+            wifi: wifiData
+            bt: btData
         }
     }
 
@@ -85,6 +124,7 @@ ShellRoot {
             theme: themeData
             notif: notifData
             cc: ccData
+            nc: ncData
         }
     }
 
@@ -106,6 +146,51 @@ ShellRoot {
             theme: themeData
             sys: sysData
             state: monData
+            cc: ccData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        NotifCenter {
+            screen: modelData
+            theme: themeData
+            notif: notifData
+            nc: ncData
+            cc: ccData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        PlayerIsland {
+            screen: modelData
+            theme: themeData
+            pstate: pstateData
+            cava: cavaData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        WifiPanel {
+            screen: modelData
+            theme: themeData
+            state: wifiData
+            cc: ccData
+        }
+    }
+
+    Variants {
+        model: Quickshell.screens
+
+        BtPanel {
+            screen: modelData
+            theme: themeData
+            state: btData
             cc: ccData
         }
     }

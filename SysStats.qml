@@ -7,6 +7,7 @@ Rectangle {
     property var theme
     property var sys
     property var mon
+    property var panels
 
     property string batText: root.sys.bat === "AC" ? "AC" : root.sys.bat + "%"
 
@@ -31,6 +32,15 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: mon.toggle()
+        onClicked: {
+            mon.toggle();
+            if (mon.open) {
+                panels.cc.close();
+                panels.nc.close();
+                panels.pstate.close();
+                panels.wifi.close();
+                panels.bt.close();
+            }
+        }
     }
 }

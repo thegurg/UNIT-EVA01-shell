@@ -5,7 +5,7 @@ import QtQuick
 QtObject {
     id: root
 
-    property var order: ["EVA-01", "NERV-01", "ACID-VOID", "GRUNGE-PINK", "CONCRETE"]
+    property var order: ["EVA-01", "LAIN", "NERV-01", "ACID-VOID", "GRUNGE-PINK", "CONCRETE"]
     property string current: "EVA-01"
 
     property var themes: ({
@@ -18,6 +18,16 @@ QtObject {
             "accent2": "#67C976",
             "border": "#67C976",
             "label": "EVA"
+        },
+        "LAIN": {
+            "bg": "#070B16",
+            "panel": "#0D1424",
+            "fg": "#C7D5EE",
+            "dim": "#3E4C6D",
+            "accent": "#4D7CFF",
+            "accent2": "#57E6FF",
+            "border": "#4D7CFF",
+            "label": "LAIN"
         },
         "NERV-01": {
             "bg": "#0A0A0A",

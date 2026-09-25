@@ -7,6 +7,22 @@ QtObject {
     id: root
 
     property var items: [] // newest first, max 6
+    property int unread: 0
+
+    function markRead() {
+        root.unread = 0;
+    }
+
+    function clearAll() {
+        var a = root.items.slice();
+        root.items = [];
+        root.unread = 0;
+        for (var i = 0; i < a.length; i++) {
+            try {
+                a[i].dismiss();
+            } catch (e) {}
+        }
+    }
 
     function dismiss(n) {
         try {
@@ -29,6 +45,7 @@ QtObject {
             if (a.length > 6)
                 a.length = 6;
             root.items = a;
+            root.unread = root.unread + 1;
         }
     }
 }

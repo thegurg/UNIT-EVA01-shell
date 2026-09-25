@@ -13,6 +13,11 @@ PanelWindow {
     property var sys
     property var cc
     property var mon
+    property var notif
+    property var nc
+    property var pstate
+    property var wifi
+    property var bt
 
     screen: modelData
 
@@ -87,6 +92,8 @@ PanelWindow {
 
             Player {
                 theme: bar.theme
+                pstate: bar.pstate
+                panels: ({ "cc": bar.cc, "nc": bar.nc, "mon": bar.mon, "wifi": bar.wifi, "bt": bar.bt })
                 Layout.alignment: Qt.AlignVCenter
             }
 
@@ -94,12 +101,144 @@ PanelWindow {
                 theme: bar.theme
                 sys: bar.sys
                 mon: bar.mon
+                panels: ({ "cc": bar.cc, "nc": bar.nc, "pstate": bar.pstate, "wifi": bar.wifi, "bt": bar.bt })
                 Layout.alignment: Qt.AlignVCenter
             }
 
             Clock {
                 theme: bar.theme
                 Layout.alignment: Qt.AlignVCenter
+            }
+
+            // wifi panel opener
+            Rectangle {
+                color: wifi.open ? theme.c.accent : theme.c.panel
+                border.color: theme.c.border
+                border.width: 1
+                radius: 2
+                implicitHeight: theme.segHeight
+                implicitWidth: 46
+                Layout.alignment: Qt.AlignVCenter
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "WIFI"
+                    color: wifi.open ? theme.c.bg : theme.c.fg
+                    font.family: theme.font
+                    font.pixelSize: theme.fs - 2
+                    font.bold: true
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        wifi.toggle();
+                        if (wifi.open) {
+                            cc.close();
+                            bt.close();
+                            nc.close();
+                            mon.close();
+                            pstate.close();
+                        }
+                    }
+                }
+            }
+
+            // bluetooth panel opener
+            Rectangle {
+                color: bt.open ? theme.c.accent : theme.c.panel
+                border.color: theme.c.border
+                border.width: 1
+                radius: 2
+                implicitHeight: theme.segHeight
+                implicitWidth: 34
+                Layout.alignment: Qt.AlignVCenter
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "BT"
+                    color: bt.open ? theme.c.bg : theme.c.fg
+                    font.family: theme.font
+                    font.pixelSize: theme.fs - 2
+                    font.bold: true
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        bt.toggle();
+                        if (bt.open) {
+                            cc.close();
+                            wifi.close();
+                            nc.close();
+                            mon.close();
+                            pstate.close();
+                        }
+                    }
+                }
+            }
+
+            // notification blinker (no icon): pulses while unread > 0
+            Rectangle {
+                color: nc.open ? theme.c.accent : theme.c.panel
+                border.color: theme.c.border
+                border.width: 1
+                radius: 2
+                implicitHeight: theme.segHeight
+                implicitWidth: bellRow.width + 16
+                Layout.alignment: Qt.AlignVCenter
+
+                Row {
+                    id: bellRow
+
+                    anchors.centerIn: parent
+                    spacing: 6
+
+                    Rectangle {
+                        id: blink
+
+                        width: 10
+                        height: 10
+                        radius: 2
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: nc.open ? theme.c.bg : (notif.unread > 0 ? theme.c.accent : theme.c.dim)
+                    }
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        text: String(notif.unread)
+                        color: nc.open ? theme.c.bg : theme.c.fg
+                        font.family: theme.font
+                        font.pixelSize: theme.fs
+                        font.bold: true
+                    }
+                }
+
+                Timer {
+                    interval: 500
+                    repeat: true
+                    running: notif.unread > 0 && !nc.open
+                    triggeredOnStart: true
+                    onTriggered: blink.opacity = blink.opacity > 0.5 ? 0.15 : 1.0
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        nc.toggle();
+                        if (nc.open) {
+                            notif.markRead();
+                            cc.close();
+                            mon.close();
+                            pstate.close();
+                            wifi.close();
+                            bt.close();
+                        }
+                    }
+                }
             }
 
             // control center toggle
@@ -124,9 +263,22 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     cursorShape: Qt.PointingHandCursor
-                    onClicked: cc.toggle()
+                    onClicked: {
+                        cc.toggle();
+                        if (cc.open) {
+                            nc.close();
+                            mon.close();
+                            pstate.close();
+                            wifi.close();
+                            bt.close();
+                        }
+                    }
                 }
             }
+        }
+
+        Grain {
+            anchors.fill: parent
         }
     }
 }

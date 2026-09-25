@@ -168,5 +168,9 @@ PanelWindow {
                 Layout.fillWidth: true
             }
         }
+
+        Grain {
+            anchors.fill: parent
+        }
     }
 }

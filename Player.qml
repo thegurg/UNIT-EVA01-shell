@@ -1,12 +1,14 @@
 import Quickshell.Services.Mpris
 import QtQuick
 
-// MPRIS player capsule. Left click = play/pause, right click = next.
+// MPRIS player capsule. Left click = toggle island, right click = next.
 // Hidden when no players are connected.
 Rectangle {
     id: root
 
     property var theme
+    property var pstate
+    property var panels
     property var player: Mpris.players.values.length > 0 ? Mpris.players.values[0] : null
 
     visible: player !== null
@@ -47,10 +49,18 @@ Rectangle {
         onClicked: mouse => {
             if (root.player === null)
                 return;
-            if (mouse.button === Qt.RightButton && root.player.canGoNext)
+            if (mouse.button === Qt.RightButton && root.player.canGoNext) {
                 root.player.next();
-            else if (root.player.canTogglePlaying)
-                root.player.togglePlaying();
+                return;
+            }
+            pstate.toggle();
+            if (pstate.open) {
+                panels.cc.close();
+                panels.nc.close();
+                panels.mon.close();
+                panels.wifi.close();
+                panels.bt.close();
+            }
         }
     }
 }

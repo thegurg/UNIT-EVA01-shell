@@ -58,15 +58,30 @@ PanelWindow {
         }
     }
 
-    property Process actor: Process {}
+    property Process wifiActor: Process {}
+    property Process btActor: Process {}
+    property Process volActor: Process {}
+    property Process briActor: Process {}
+    property Process powerActor: Process {}
 
-    function run(cmd) {
-        actor.command = cmd;
-        actor.running = true;
+    // Buffered run: never drops a command when the actor is busy,
+    // retries until the previous command finishes.
+    function runBuffered(actor, cmd) {
+        if (actor.running) {
+            var t = Qt.createQmlObject("import QtQuick; Timer { interval: 150; repeat: false }", cc);
+            t.triggered.connect(() => {
+                runBuffered(actor, cmd);
+                t.destroy();
+            });
+            t.start();
+        } else {
+            actor.command = cmd;
+            actor.running = true;
+        }
     }
 
     property Timer pollTimer: Timer {
-        interval: 3000
+        interval: 5000
         repeat: true
         running: cc.visible
         triggeredOnStart: true
@@ -110,8 +125,8 @@ PanelWindow {
                     border.color: theme.c.dim
                     border.width: 1
                     radius: 2
-                    implicitWidth: 26
-                    implicitHeight: 22
+                    implicitWidth: 34
+                    implicitHeight: 26
 
                     Text {
                         anchors.centerIn: parent
@@ -156,7 +171,8 @@ PanelWindow {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            run(["nmcli", "radio", "wifi", wifiOn ? "off" : "on"]);
+                            wifiOn = !wifiOn;
+                            runBuffered(wifiActor, ["nmcli", "radio", "wifi", wifiOn ? "on" : "off"]);
                             refresh();
                         }
                     }
@@ -184,7 +200,8 @@ PanelWindow {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            run(["bluetoothctl", "power", btOn ? "off" : "on"]);
+                            btOn = !btOn;
+                            runBuffered(btActor, ["bluetoothctl", "power", btOn ? "on" : "off"]);
                             refresh();
                         }
                     }
@@ -220,7 +237,7 @@ PanelWindow {
 
                     onPressedChanged: {
                         if (!pressed)
-                            run(["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.round(value) + "%"]);
+                            runBuffered(volActor, ["wpctl", "set-volume", "@DEFAULT_AUDIO_SINK@", Math.round(value) + "%"]);
                     }
 
                     background: Rectangle {
@@ -280,7 +297,7 @@ PanelWindow {
 
                     onPressedChanged: {
                         if (!pressed)
-                            run(["brightnessctl", "set", Math.round(value) + "%"]);
+                            runBuffered(briActor, ["brightnessctl", "set", Math.round(value) + "%"]);
                     }
 
                     background: Rectangle {
@@ -345,11 +362,15 @@ PanelWindow {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: run(modelData.cmd)
+                            onClicked: runBuffered(powerActor, modelData.cmd)
                         }
                     }
                 }
             }
+        }
+
+        Grain {
+            anchors.fill: parent
         }
     }
 }

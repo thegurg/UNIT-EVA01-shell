@@ -11,6 +11,7 @@ PanelWindow {
     property var theme
     property var notif
     property var cc
+    property var nc
 
     screen: modelData
 
@@ -25,7 +26,7 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
 
-    visible: notif.items.length > 0
+    visible: notif.items.length > 0 && !nc.open
     implicitWidth: 330
 
     ColumnLayout {
